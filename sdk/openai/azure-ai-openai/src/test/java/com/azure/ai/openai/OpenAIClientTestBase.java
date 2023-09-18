@@ -33,6 +33,8 @@ import com.azure.core.http.policy.HttpLogOptions;
 import com.azure.core.http.rest.Response;
 import com.azure.core.test.TestMode;
 import com.azure.core.test.TestProxyTestBase;
+import com.azure.core.test.models.BodilessMatcher;
+import com.azure.core.test.models.HeaderlessMatcher;
 import com.azure.core.test.models.TestProxySanitizer;
 import com.azure.core.test.models.TestProxySanitizerType;
 import com.azure.core.util.BinaryData;
@@ -70,6 +72,7 @@ public abstract class OpenAIClientTestBase extends TestProxyTestBase {
         }
 
         if (getTestMode() == TestMode.PLAYBACK) {
+            setMatchers();
             builder
                 .endpoint("https://localhost:8080")
                 .credential(new AzureKeyCredential(FAKE_API_KEY));
@@ -95,6 +98,7 @@ public abstract class OpenAIClientTestBase extends TestProxyTestBase {
         }
 
         if (getTestMode() == TestMode.PLAYBACK) {
+            setMatchers();
             builder
                 .credential(new KeyCredential(FAKE_API_KEY));
         } else if (getTestMode() == TestMode.RECORD) {
@@ -128,6 +132,9 @@ public abstract class OpenAIClientTestBase extends TestProxyTestBase {
         }
     }
 
+    private void setMatchers() {
+        interceptorManager.addMatchers(Arrays.asList(new BodilessMatcher(), new HeaderlessMatcher()));
+    }
 
     @Test
     public abstract void testGetCompletions(HttpClient httpClient, OpenAIServiceVersion serviceVersion);
