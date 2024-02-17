@@ -209,7 +209,7 @@ public final class CryptographyClientJavaDocCodeSnippets {
             signResponse.getAlgorithm());
         // END: com.azure.security.keyvault.keys.cryptography.CryptographyClient.sign#SignatureAlgorithm-byte-Context
 
-        byte[] signature = signResult.getSignature();
+        byte[] signature = new byte[100];
 
         // BEGIN: com.azure.security.keyvault.keys.cryptography.CryptographyClient.verify#SignatureAlgorithm-byte-byte
         byte[] myData = new byte[100];
@@ -224,7 +224,7 @@ public final class CryptographyClientJavaDocCodeSnippets {
         System.out.printf("Verification status: %s.%n", verifyResult.isValid());
         // END: com.azure.security.keyvault.keys.cryptography.CryptographyClient.verify#SignatureAlgorithm-byte-byte
 
-        byte[] signatureBytes = signResponse.getSignature();
+        byte[] signatureBytes = new byte[100];
 
         // BEGIN: com.azure.security.keyvault.keys.cryptography.CryptographyClient.verify#SignatureAlgorithm-byte-byte-Context
         byte[] dataBytes = new byte[100];
@@ -308,7 +308,7 @@ public final class CryptographyClientJavaDocCodeSnippets {
         CryptographyClient cryptographyClient = createClient();
 
         // BEGIN: com.azure.security.keyvault.keys.cryptography.CryptographyClient.signData#SignatureAlgorithm-byte
-        byte[] data = new byte[32];
+        byte[] data = new byte[100];
         new Random(0x1234567L).nextBytes(data);
 
         SignResult signResult = cryptographyClient.sign(SignatureAlgorithm.ES256, data);
@@ -318,7 +318,7 @@ public final class CryptographyClientJavaDocCodeSnippets {
         // END: com.azure.security.keyvault.keys.cryptography.CryptographyClient.signData#SignatureAlgorithm-byte
 
         // BEGIN: com.azure.security.keyvault.keys.cryptography.CryptographyClient.signData#SignatureAlgorithm-byte-Context
-        byte[] plainTextData = new byte[32];
+        byte[] plainTextData = new byte[100];
         new Random(0x1234567L).nextBytes(plainTextData);
 
         SignResult signingResult = cryptographyClient.sign(SignatureAlgorithm.ES256, plainTextData);
@@ -327,10 +327,10 @@ public final class CryptographyClientJavaDocCodeSnippets {
             signingResult.getSignature().length, new Context("key1", "value1"));
         // END: com.azure.security.keyvault.keys.cryptography.CryptographyClient.signData#SignatureAlgorithm-byte-Context
 
-        byte[] signature = signResult.getSignature();
+        byte[] signature = new byte[100];
 
         // BEGIN: com.azure.security.keyvault.keys.cryptography.CryptographyClient.verifyData#SignatureAlgorithm-byte-byte
-        byte[] myData = new byte[32];
+        byte[] myData = new byte[100];
         new Random(0x1234567L).nextBytes(myData);
 
         // A signature can be obtained from the SignResult returned by the CryptographyClient.sign() operation.
@@ -339,10 +339,10 @@ public final class CryptographyClientJavaDocCodeSnippets {
         System.out.printf("Verification status: %s.%n", verifyResult.isValid());
         // END: com.azure.security.keyvault.keys.cryptography.CryptographyClient.verifyData#SignatureAlgorithm-byte-byte
 
-        byte[] mySignature = signingResult.getSignature();
+        byte[] mySignature = new byte[100];
 
         // BEGIN: com.azure.security.keyvault.keys.cryptography.CryptographyClient.verifyData#SignatureAlgorithm-byte-byte-Context
-        byte[] dataToVerify = new byte[32];
+        byte[] dataToVerify = new byte[100];
         new Random(0x1234567L).nextBytes(dataToVerify);
 
         // A signature can be obtained from the SignResult returned by the CryptographyClient.sign() operation.
