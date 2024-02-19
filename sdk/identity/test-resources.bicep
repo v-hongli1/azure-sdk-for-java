@@ -112,8 +112,7 @@ resource web 'Microsoft.Web/sites@2021-03-01' = {
     httpsOnly: true
     keyVaultReferenceIdentity: 'SystemAssigned'
     siteConfig: {
-    linuxFxVersion: 'JAVA|11'
-javaVersion: '11'
+      linuxFxVersion: 'JAVA|17-java17'
       http20Enabled: true
       minTlsVersion: '1.2'
       appSettings: [
