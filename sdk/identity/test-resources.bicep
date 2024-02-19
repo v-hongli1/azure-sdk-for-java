@@ -93,7 +93,7 @@ resource farm 'Microsoft.Web/serverfarms@2021-03-01' = {
     capacity: 1
   }
   properties: { }
-  kind: 'app'
+  kind: 'app,linux'
 }
 
 resource web 'Microsoft.Web/sites@2021-03-01' = {
@@ -131,6 +131,10 @@ resource web 'Microsoft.Web/sites@2021-03-01' = {
         {
           name: 'IDENTITY_USER_DEFINED_IDENTITY'
           value: usermgdid.id
+        }
+        {
+          name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
+          value: 'true'
         }
       ]
     }
