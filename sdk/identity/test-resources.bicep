@@ -83,7 +83,7 @@ resource sa2 'Microsoft.Storage/storageAccounts@2021-08-01' = {
 }
 
 resource farm 'Microsoft.Web/serverfarms@2021-03-01' = {
-  name: '${baseName}-asp'
+  name: '${baseName}_farm'
   location: location
   sku: {
     name: 'B1'
@@ -92,8 +92,10 @@ resource farm 'Microsoft.Web/serverfarms@2021-03-01' = {
     family: 'B'
     capacity: 1
   }
-  properties: { }
-  kind: 'app,linux'
+  kind: 'linux'
+  properties: {
+    reserved: true
+  }
 }
 
 resource web 'Microsoft.Web/sites@2021-03-01' = {
