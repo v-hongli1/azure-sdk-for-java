@@ -15,7 +15,7 @@ function getVariable {
     exit 1
 }
 
-
+pip install azure-cli=="2.56.0" | Write-Host
 $webappRoot = "$PSScriptRoot/identity-mi-server" | Resolve-Path
 
 Write-Host "webappRoot: $webappRoot"
@@ -49,6 +49,8 @@ if (Test-Path -Path "$webappRoot/target/identity-mi-server-0.0.1-SNAPSHOT.jar" -
 }
 
 Write-Host "working on function"
+
+pip install
 
 # build function app
 mvn clean package "-DfunctionAppName=$(getVariable('IDENTITY_FUNCTION_NAME'))" "-DresourceGroup=$(getVariable('IDENTITY_RESOURCE_GROUP'))" "-DappServicePlanName=$(getVariable('IDENTITY_APPSERVICE_NAME'))" -f $funcAppPom | Write-Host
