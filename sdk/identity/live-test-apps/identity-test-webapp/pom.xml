@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.azure</groupId>
-	<artifactId>identity-mi-server</artifactId>
+	<artifactId>identity-test-webapp</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>identity-mi-server</name>
-	<description>Hello World</description>
+	<name>identity-test-webapp</name>
+	<description>Web App MI Test</description>
 
 	<dependencies>
 		<dependency>
