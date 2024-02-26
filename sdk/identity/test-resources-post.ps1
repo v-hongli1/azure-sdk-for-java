@@ -16,7 +16,7 @@ function getVariable {
 }
 
 pip install azure-cli=="2.56.0" | Write-Host
-$webappRoot = "$PSScriptRoot/identity-mi-server" | Resolve-Path
+$webappRoot = "$PSScriptRoot/live-test-apps/identity-test-webapp" | Resolve-Path
 
 Write-Host "webappRoot: $webappRoot"
 $webappRootPom = "$webappRoot/pom.xml" | Resolve-Path
@@ -36,13 +36,13 @@ az account set --subscription $(getVariable('IDENTITY_SUBSCRIPTION_ID'))
 mvn --version | Write-Host
 
 mvn clean install -DskipTests -f $webappRootPom | Write-Host
-az webapp deploy --resource-group $(getVariable('IDENTITY_RESOURCE_GROUP')) --name $(getVariable('IDENTITY_WEBAPP_NAME')) --src-path "$webappRoot/target/identity-mi-server-0.0.1-SNAPSHOT.jar" --type jar
+az webapp deploy --resource-group $(getVariable('IDENTITY_RESOURCE_GROUP')) --name $(getVariable('IDENTITY_WEBAPP_NAME')) --src-path "$webappRoot/target/identity-test-webapp-0.0.1-SNAPSHOT.jar" --type jar
 # Remove-Item -Force -Recurse "$workingFolder/target"
 # if ($null -eq $Env:AGENT_WORKFOLDER) {
 #     Remove-Item -Force -Recurse "$webappRoot/%AGENT_WORKFOLDER%"
 # }
 
-if (Test-Path -Path "$webappRoot/target/identity-mi-server-0.0.1-SNAPSHOT.jar" -PathType Leaf) {
+if (Test-Path -Path "$webappRoot/target/identity-test-webapp-0.0.1-SNAPSHOT.jar" -PathType Leaf) {
     Write-Host "The file exists!"
 } else {
     Write-Host "The file does not exist."
