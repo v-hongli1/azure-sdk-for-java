@@ -16,6 +16,8 @@ param (
     [string] $TenantId
 )
 
+pip install azure-cli=="2.56.0"
+
 Import-Module -Name $PSScriptRoot/../../eng/common/scripts/X509Certificate2 -Verbose
 
 ssh-keygen -t rsa -b 4096 -f $PSScriptRoot/sshKey -N '' -C ''

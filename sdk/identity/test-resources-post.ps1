@@ -15,7 +15,6 @@ function getVariable {
     exit 1
 }
 
-pip install azure-cli=="2.56.0" | Write-Host
 $webappRoot = "$PSScriptRoot/live-test-apps/identity-test-webapp" | Resolve-Path
 
 Write-Host "webappRoot: $webappRoot"
