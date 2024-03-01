@@ -16,7 +16,7 @@ param (
     [string] $TenantId
 )
 
-# pip install azure-cli=="2.56.0" | Write-Host
+pip install azure-cli=="2.56.0" | Write-Host
 
 $az_version = az version
 Write-Host "Azure CLI version: $az_version"

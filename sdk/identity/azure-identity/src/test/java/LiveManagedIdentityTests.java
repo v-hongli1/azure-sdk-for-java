@@ -68,9 +68,9 @@ public class LiveManagedIdentityTests extends TestBase {
         String targetFramework = configuration.get("TESTTARGETFRAMEWORK");
         String podName = configuration.get("IDENTITY_AKS_POD_NAME");
 
-        String azPath = runCommand("which", "az");
+        String azPath = runCommand("which", "az").trim();
 
-        String kubectlPath = runCommand("which", "kubectl");
+        String kubectlPath = runCommand("which", "kubectl").trim();
 
         runCommand(azPath, "login --service-principal -u " + spClientId + " -p " + secret + " --tenant " + tenantId);
 
