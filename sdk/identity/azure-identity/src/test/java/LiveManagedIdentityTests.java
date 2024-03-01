@@ -72,27 +72,31 @@ public class LiveManagedIdentityTests extends TestBase {
 
         String kubectlPath = runCommand("which", "kubectl").trim();
 
-        runCommand(azPath, "login --service-principal -u " + spClientId + " -p " + secret + " --tenant " + tenantId);
+        runCommand(azPath, "login",  "--service-principal", "-u", spClientId, "-p", secret, "--tenant", tenantId);
 
-        runCommand(azPath, "account set --subscription " + subscriptionId);
+        runCommand(azPath, "account", "set", "--subscription", subscriptionId);
 
-        runCommand(azPath, "aks get-credentials --resource-group " + resourceGroup + " --name " + aksCluster + " --overwrite-existing");
+        runCommand(azPath, "aks", "get-credentials", "--resource-group", resourceGroup, "--name", aksCluster, "--overwrite-existing");
 
-        String podOutput = runCommand(kubectlPath, "get pods -o jsonpath='{.items[0].metadata.name}'");
+        String podOutput = runCommand(kubectlPath, "get", "pods", "-o", "jsonpath='{.items[0].metadata.name}'");
         assertTrue(podOutput.contains(podName), "Pod name not found in the output");
 
-        runCommand(kubectlPath, "cp " + buildArtifact + "/artifacts/bin/live-test-apps/identity-test-container");
+        runCommand(kubectlPath, "cp", buildArtifact, "/artifacts/bin/live-test-apps/identity-test-container");
 
 
-        String output = runCommand(kubectlPath, "exec -it " + podName + " -- /bin/bash -c 'cd identity-test-container && java -jar identity-test-container-1.0.0.jar'");
+        String output = runCommand(kubectlPath, "exec", "-it", podName, "-- /bin/bash", "-c", "'cd identity-test-container && java -jar identity-test-container-1.0.0.jar'");
 
         Assertions.assertTrue(output.contains("Successfully retrieved managed identity tokens"), "Failed to get response from AKS");
     }
 
-    private String runCommand(String command, String args) {
+    private String runCommand(String... args) {
         try {
-            System.out.println("Running command: " + command + " " + args);
-            ProcessBuilder processBuilder = new ProcessBuilder(command, args);
+            StringBuilder command = new StringBuilder();
+            for (String arg : args) {
+                command.append(arg).append(" ");
+            }
+            System.out.println("Running command: " + command);
+            ProcessBuilder processBuilder = new ProcessBuilder(args);
             processBuilder.redirectErrorStream(true);
             Process process = processBuilder.start();
             // Set timeout
