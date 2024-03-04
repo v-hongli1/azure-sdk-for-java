@@ -13,6 +13,11 @@ param sshPubKey string
 
 param adminUserName string = 'azureuser'
 
+@minLength(5)
+@maxLength(50)
+@description('Provide a globally unique name of the Azure Container Registry')
+param acrName string = 'acr${uniqueString(resourceGroup().id)}'
+
 param latestAksVersion string
 
 //See https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles
@@ -207,6 +212,17 @@ resource azfunc 'Microsoft.Web/sites@2021-03-01' = {
   }
 }
 
+resource acrResource 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' = {
+  name: acrName
+  location: location
+  sku: {
+    name: 'Basic'
+  }
+  properties: {
+    adminUserEnabled: true
+  }
+}
+
 resource newCluster 'Microsoft.ContainerService/managedClusters@2023-06-01' = {
   name: baseName
   location: location
@@ -265,3 +281,5 @@ output IDENTITY_STORAGE_NAME_2 string = sa2.name
 output IDENTITY_FUNCTION_NAME string = azfunc.name
 output IDENTITY_APPSERVICE_NAME string = farm.name
 output IDENTITY_FUNC_URL string = azfunc.properties.defaultHostName
+output IDENTITY_ACR_NAME string = acrResource.name
+output IDENTITY_ACR_LOGIN_SERVER string = acrResource.properties.loginServer
