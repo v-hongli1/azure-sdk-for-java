@@ -50,7 +50,7 @@ az functionapp deployment source config-zip -g $(getVariable('IDENTITY_RESOURCE_
 
 
 # build function app
-mvn clean package -f "$aksRoot\pom.xml" | Write-Host
+mvn clean package -f "$aksRoot/pom.xml" | Write-Host
 
 
 az acr login -n $DeploymentOutputs['IDENTITY_ACR_NAME']

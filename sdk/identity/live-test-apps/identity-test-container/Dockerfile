@@ -14,18 +14,6 @@ RUN git clone https://github.com/Azure/azure-sdk-for-java --single-branch --dept
 
 
 FROM maven:3-jdk-8
-COPY --from=clone /azure-sdk-for-java /azure-sdk-for-java
 COPY target/identity-test-container-1.0-SNAPSHOT-jar-with-dependencies.jar /identity-test-container-1.0-SNAPSHOT-jar-with-dependencies.jar
-WORKDIR /azure-sdk-for-java
-
-RUN mvn clean install -Dgpg.skip -DskipTests -f eng/code-quality-reports/pom.xml
-RUN mvn clean install -Dgpg.skip -DskipTests -f common/perf-test-core/pom.xml
-RUN mvn clean install -Dgpg.skip -DskipTests -Dmaven.javadoc.skip=true -f sdk/core/azure-core/pom.xml
-RUN mvn clean install -Dgpg.skip -DskipTests -Dmaven.javadoc.skip=true -f sdk/core/azure-core-test/pom.xml
-RUN mvn clean install -Dgpg.skip -DskipTests -Dmaven.javadoc.skip=true -f sdk/core/azure-core-http-netty/pom.xml
-RUN mvn clean install -Dgpg.skip -DskipTests -Dmaven.javadoc.skip=true -f sdk/identity/azure-identity/pom.xml
-RUN mvn clean install -Dgpg.skip -DskipTests -Dmaven.javadoc.skip=true -f sdk/keyvault/azure-security-keyvault-secrets/pom.xml
-RUN mvn clean install -Dgpg.skip -DskipTests -Dmaven.javadoc.skip=true -f sdk/keyvault/azure-security-keyvault-keys/pom.xml
-RUN mvn clean install -Dgpg.skip -DskipTests -Dmaven.javadoc.skip=true -f sdk/keyvault/azure-security-keyvault-certificates/pom.xml
 
 CMD [ "sleep", "infinity" ]
