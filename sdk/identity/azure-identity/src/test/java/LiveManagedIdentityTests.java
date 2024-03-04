@@ -12,6 +12,8 @@ import com.azure.core.util.logging.LogLevel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperties;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -53,8 +55,14 @@ public class LiveManagedIdentityTests extends TestBase {
 
     @Test
     @EnabledIfEnvironmentVariable(named = "AZURE_TEST_MODE", matches = "LIVE")
+    @EnabledIfSystemProperties({
+        @EnabledIfSystemProperty(named = "os.name", matches = "Linux"),
+        @EnabledIfSystemProperty(named = "os.name", matches = "Windows")
+    })
     public void testManagedIdentityAksDeployment() {
 
+        String os = System.getProperty("os.name");
+        System.out.println("OS: " + os);
         //Setup Env
         Configuration configuration = Configuration.getGlobalConfiguration().clone();
 
@@ -64,13 +72,12 @@ public class LiveManagedIdentityTests extends TestBase {
         String resourceGroup = configuration.get("IDENTITY_RESOURCE_GROUP");
         String aksCluster = configuration.get("IDENTITY_AKS_CLUSTER_NAME");
         String subscriptionId = configuration.get("IDENTITY_SUBSCRIPTION_ID");
-        String buildArtifact = configuration.get("BUILD_SOURCEDIRECTORY");
-        String targetFramework = configuration.get("TESTTARGETFRAMEWORK");
         String podName = configuration.get("IDENTITY_AKS_POD_NAME");
 
-        String azPath = runCommand("which", "az").trim();
 
-        String kubectlPath = runCommand("which", "kubectl").trim();
+        String azPath = runCommand(os.contains("Windows") ? "where" : "which", "az").trim();
+
+        String kubectlPath = runCommand(os.contains("Windows") ? "where" : "which", "kubectl").trim();
 
         runCommand(azPath, "login",  "--service-principal", "-u", spClientId, "-p", secret, "--tenant", tenantId);
 
@@ -81,10 +88,6 @@ public class LiveManagedIdentityTests extends TestBase {
         String podOutput = runCommand(kubectlPath, "get", "pods", "-o", "jsonpath='{.items[0].metadata.name}'");
         assertTrue(podOutput.contains(podName), "Pod name not found in the output");
 
-//        runCommand(kubectlPath, "cp", buildArtifact, "/artifacts/bin/live-test-apps/identity-test-container");
-
-        String output1 = runCommand(kubectlPath, "exec", "-it", podName, "--", "ls");
-        String output2 = runCommand(kubectlPath, "exec", "-it", podName, "--", "java", "-version");
 
         String output = runCommand(kubectlPath, "exec", "-it", podName, "--", "java", "-jar", "/identity-test.jar");
 
