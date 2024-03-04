@@ -84,7 +84,7 @@ public class LiveManagedIdentityTests extends TestBase {
 //        runCommand(kubectlPath, "cp", buildArtifact, "/artifacts/bin/live-test-apps/identity-test-container");
 
         String output1 = runCommand(kubectlPath, "exec", "-it", podName, "--", "/bin/bash", "-c", "'ls'");
-        String output1 = runCommand(kubectlPath, "exec", "-it", podName, "--", "/bin/bash", "-c", "'java -version'");
+        String output2 = runCommand(kubectlPath, "exec", "-it", podName, "--", "/bin/bash", "-c", "'java -version'");
 
         String output = runCommand(kubectlPath, "exec", "-it", podName, "--", "/bin/bash", "-c", "'java -jar identity-test.jar'");
 
