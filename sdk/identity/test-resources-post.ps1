@@ -109,7 +109,7 @@ spec:
   serviceAccountName: $SaAccountName
   containers:
   - name: $PodName
-    image: $containerImage
+    image: $image
     env:
     - name: AZURE_TEST_MODE
       value: "LIVE"
