@@ -1,19 +1,9 @@
 package com.azure;
 
-import com.azure.identity.ManagedIdentityCredential;
-import com.azure.identity.ManagedIdentityCredentialBuilder;
-import com.azure.storage.blob.BlobServiceClient;
-import com.azure.storage.blob.BlobServiceClientBuilder;
-import com.microsoft.azure.functions.ExecutionContext;
-import com.microsoft.azure.functions.HttpMethod;
-import com.microsoft.azure.functions.HttpRequestMessage;
-import com.microsoft.azure.functions.HttpResponseMessage;
-import com.microsoft.azure.functions.HttpStatus;
-import com.microsoft.azure.functions.annotation.AuthorizationLevel;
-import com.microsoft.azure.functions.annotation.FunctionName;
-import com.microsoft.azure.functions.annotation.HttpTrigger;
-
-import java.util.Optional;
+import com.azure.identity.WorkloadIdentityCredential;
+import com.azure.identity.WorkloadIdentityCredentialBuilder;
+import com.azure.core.credential.TokenRequestContext;
+import com.azure.core.credential.AccessToken;
 
 /**
  * Program to fetch token from Workload Identity Credential.
@@ -25,7 +15,7 @@ public class Program {
         try {
             AccessToken accessToken = workloadIdentityCredential
                 .getTokenSync(new TokenRequestContext().addScopes("https://management.azure.com/.default"));
-            System.out.println("Successfully acquired a token from WorkloadIdentityCredential");
+            System.out.println("Successfully retrieved managed identity tokens");
         } catch (Exception ex) {
             System.out.println("Failed to acquire a token from WorkloadIdentityCredential");
         }

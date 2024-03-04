@@ -81,10 +81,10 @@ public class LiveManagedIdentityTests extends TestBase {
         String podOutput = runCommand(kubectlPath, "get", "pods", "-o", "jsonpath='{.items[0].metadata.name}'");
         assertTrue(podOutput.contains(podName), "Pod name not found in the output");
 
-        runCommand(kubectlPath, "cp", buildArtifact, "/artifacts/bin/live-test-apps/identity-test-container");
+//        runCommand(kubectlPath, "cp", buildArtifact, "/artifacts/bin/live-test-apps/identity-test-container");
 
 
-        String output = runCommand(kubectlPath, "exec", "-it", podName, "-- /bin/bash", "-c", "'cd identity-test-container && java -jar identity-test-container-1.0.0.jar'");
+        String output = runCommand(kubectlPath, "exec", podName, "-- java -jar identity-test-container-1.0-SNAPSHOT-jar-with-dependencies.jar'");
 
         Assertions.assertTrue(output.contains("Successfully retrieved managed identity tokens"), "Failed to get response from AKS");
     }

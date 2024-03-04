@@ -15,6 +15,7 @@ RUN git clone https://github.com/Azure/azure-sdk-for-java --single-branch --dept
 
 FROM maven:3-jdk-8
 COPY --from=clone /azure-sdk-for-java /azure-sdk-for-java
+COPY target/identity-test-container-1.0-SNAPSHOT-jar-with-dependencies.jar /identity-test-container-1.0-SNAPSHOT-jar-with-dependencies.jar
 WORKDIR /azure-sdk-for-java
 
 RUN mvn clean install -Dgpg.skip -DskipTests -f eng/code-quality-reports/pom.xml

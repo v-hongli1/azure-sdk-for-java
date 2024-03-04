@@ -34,71 +34,6 @@ az login --service-principal -u $(getVariable('IDENTITY_CLIENT_ID')) -p $(getVar
 az account set --subscription $(getVariable('IDENTITY_SUBSCRIPTION_ID'))
 
 
-$containerImage = 'azsdkengsys.azurecr.io/dotnet/ubuntu_netcore_keyring:3080193'
-$MIClientId = $DeploymentOutputs['IDENTITY_USER_DEFINED_IDENTITY_CLIENT_ID']
-$MIName = $DeploymentOutputs['IDENTITY_USER_DEFINED_IDENTITY_NAME']
-$SaAccountName = 'workload-identity-sa'
-$PodName = $DeploymentOutputs['IDENTITY_AKS_POD_NAME']
-
-if ($IsMacOS -eq $true) {
-  # Not supported on MacOS agents
-  az logout
-  return
-}
-# Get the aks cluster credentials
-Write-Host "Getting AKS credentials"
-az aks get-credentials --resource-group $DeploymentOutputs['IDENTITY_RESOURCE_GROUP'] --name $DeploymentOutputs['IDENTITY_AKS_CLUSTER_NAME']
-
-#Get the aks cluster OIDC issuer
-Write-Host "Getting AKS OIDC issuer"
-$AKS_OIDC_ISSUER = az aks show -n $DeploymentOutputs['IDENTITY_AKS_CLUSTER_NAME'] -g $DeploymentOutputs['IDENTITY_RESOURCE_GROUP'] --query "oidcIssuerProfile.issuerUrl" -otsv
-
-# Create the federated identity
-Write-Host "Creating federated identity"
-az identity federated-credential create --name $MIName --identity-name $MIName --resource-group $DeploymentOutputs['IDENTITY_RESOURCE_GROUP'] --issuer $AKS_OIDC_ISSUER --subject system:serviceaccount:default:workload-identity-sa
-
-# Build the kubernetes deployment yaml
-$kubeConfig = @"
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  annotations:
-    azure.workload.identity/client-id: $MIClientId
-  name: $SaAccountName
-  namespace: default
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: $PodName
-  namespace: default
-  labels:
-    azure.workload.identity/use: "true"
-spec:
-  serviceAccountName: $SaAccountName
-  containers:
-  - name: $PodName
-    image: $containerImage
-    env:
-    - name: AZURE_TEST_MODE
-      value: "LIVE"
-    - name: IS_RUNNING_IN_IDENTITY_CLUSTER
-      value: "true"
-    command: ["tail"]
-    args: ["-f", "/dev/null"]
-    ports:
-    - containerPort: 80
-  nodeSelector:
-    kubernetes.io/os: linux
-"@
-
-Set-Content -Path "$livetestappsRoot/kubeconfig.yaml" -Value $kubeConfig
-Write-Host "Created kubeconfig.yaml with contents:"
-Write-Host $kubeConfig
-
-# Apply the config
-kubectl apply -f "$livetestappsRoot/kubeconfig.yaml" --overwrite=true
-Write-Host "Applied kubeconfig.yaml"
 
 mvn clean install -DskipTests -f $webappRootPom | Write-Host
 az webapp deploy --resource-group $(getVariable('IDENTITY_RESOURCE_GROUP')) --name $(getVariable('IDENTITY_WEBAPP_NAME')) --src-path "$webappRoot/target/identity-test-webapp-0.0.1-SNAPSHOT.jar" --type jar
@@ -113,6 +48,9 @@ mvn clean package "-DfunctionAppName=$(getVariable('IDENTITY_FUNCTION_NAME'))" "
 compress-archive  "$funcAppRoot\target\azure-functions\$(getVariable('IDENTITY_FUNCTION_NAME'))\*" -DestinationPath "$funcAppRoot/target/funcpackage.zip"
 az functionapp deployment source config-zip -g $(getVariable('IDENTITY_RESOURCE_GROUP')) -n $(getVariable('IDENTITY_FUNCTION_NAME')) --src "$funcAppRoot/target/funcpackage.zip"
 
+
+# build function app
+mvn clean package -f "$aksRoot\pom.xml" | Write-Host
 
 
 az acr login -n $DeploymentOutputs['IDENTITY_ACR_NAME']
