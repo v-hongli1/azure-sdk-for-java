@@ -15,6 +15,8 @@ function getVariable {
     exit 1
 }
 
+$livetestappsRoot = "$PSScriptRoot/live-test-apps" | Resolve-Path
+
 $webappRoot = "$PSScriptRoot/live-test-apps/identity-test-webapp" | Resolve-Path
 
 $aksRoot = "$PSScriptRoot/live-test-apps/identity-test-container" | Resolve-Path
@@ -90,12 +92,12 @@ spec:
     kubernetes.io/os: linux
 "@
 
-Set-Content -Path "$workingFolder/kubeconfig.yaml" -Value $kubeConfig
+Set-Content -Path "$livetestappsRoot/kubeconfig.yaml" -Value $kubeConfig
 Write-Host "Created kubeconfig.yaml with contents:"
 Write-Host $kubeConfig
 
 # Apply the config
-kubectl apply -f "$workingFolder/kubeconfig.yaml" --overwrite=true
+kubectl apply -f "$livetestappsRoot/kubeconfig.yaml" --overwrite=true
 Write-Host "Applied kubeconfig.yaml"
 
 mvn clean install -DskipTests -f $webappRootPom | Write-Host
@@ -183,12 +185,12 @@ spec:
     kubernetes.io/os: linux
 "@
 
-Set-Content -Path "$workingFolder/kubeconfig.yaml" -Value $kubeConfig
+Set-Content -Path "$livetestappsRoot/kubeconfig.yaml" -Value $kubeConfig
 Write-Host "Created kubeconfig.yaml with contents:"
 Write-Host $kubeConfig
 
 # Apply the config
-kubectl apply -f "$workingFolder/kubeconfig.yaml" --overwrite=true
+kubectl apply -f "$livetestappsRoot/kubeconfig.yaml" --overwrite=true
 Write-Host "Applied kubeconfig.yaml"
 az logout
 
