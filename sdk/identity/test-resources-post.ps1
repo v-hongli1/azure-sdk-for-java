@@ -70,11 +70,11 @@ $MIName = $DeploymentOutputs['IDENTITY_USER_DEFINED_IDENTITY_NAME']
 $SaAccountName = 'workload-identity-sa'
 $PodName = $DeploymentOutputs['IDENTITY_AKS_POD_NAME']
 
-# if ($IsMacOS -eq $true) {
-#   # Not supported on MacOS agents
-#   az logout
-#   return
-# }
+if ($IsMacOS -eq $true) {
+  # Not supported on MacOS agents
+  az logout
+  return
+}
 
 # Get the aks cluster credentials
 Write-Host "Getting AKS credentials"
