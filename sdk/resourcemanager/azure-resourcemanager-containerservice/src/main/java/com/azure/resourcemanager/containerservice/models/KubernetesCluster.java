@@ -122,7 +122,7 @@ public interface KubernetesCluster
     String agentPoolResourceGroup();
 
     /**
-     * Whether the kubernetes cluster can be accessed from public network.
+     * Checks whether the kubernetes cluster can be accessed from public network.
      *
      * @return whether the kubernetes cluster can be accessed from public network.
      */
