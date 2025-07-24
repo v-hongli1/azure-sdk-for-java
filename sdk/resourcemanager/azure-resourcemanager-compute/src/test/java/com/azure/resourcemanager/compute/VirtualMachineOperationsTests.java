@@ -27,7 +27,6 @@ import com.azure.core.util.polling.PollResponse;
 import com.azure.resourcemanager.compute.fluent.models.CapacityReservationGroupInner;
 import com.azure.resourcemanager.compute.fluent.models.CapacityReservationInner;
 import com.azure.resourcemanager.compute.fluent.models.VirtualMachineInner;
-import com.azure.resourcemanager.compute.models.ApiErrorException;
 import com.azure.resourcemanager.compute.models.AvailabilitySet;
 import com.azure.resourcemanager.compute.models.CachingTypes;
 import com.azure.resourcemanager.compute.models.DeleteOptions;
@@ -386,7 +385,7 @@ public class VirtualMachineOperationsTests extends ComputeManagementTest {
             .withNewPrimaryNetwork("10.0.0.0/28")
             .withPrimaryPrivateIPAddressDynamic()
             .withoutPrimaryPublicIPAddress()
-            .withPopularWindowsImage(KnownWindowsVirtualMachineImage.WINDOWS_SERVER_2012_R2_DATACENTER)
+            .withPopularWindowsImage(KnownWindowsVirtualMachineImage.WINDOWS_SERVER_2016_DATACENTER)
             .withAdminUsername("Foo12")
             .withAdminPassword(password())
             .withUnmanagedDisks()

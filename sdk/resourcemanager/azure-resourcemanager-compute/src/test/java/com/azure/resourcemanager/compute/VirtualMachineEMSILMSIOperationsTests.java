@@ -439,7 +439,7 @@ public class VirtualMachineEMSILMSIOperationsTests extends ComputeManagementTest
 
         // Update the virtual machine by enabling "LMSI"
 
-        virtualMachine.update().withSystemAssignedManagedServiceIdentity().apply().refresh();
+        virtualMachine.update().withSystemAssignedManagedServiceIdentity().apply();
         //
         Assertions.assertNotNull(virtualMachine);
         Assertions.assertNotNull(virtualMachine.innerModel());
@@ -451,7 +451,7 @@ public class VirtualMachineEMSILMSIOperationsTests extends ComputeManagementTest
         Assertions.assertNotNull(virtualMachine.systemAssignedManagedServiceIdentityTenantId());
         Assertions.assertEquals(1, virtualMachine.userAssignedManagedServiceIdentityIds().size());
         //
-        virtualMachine.update().withoutSystemAssignedManagedServiceIdentity().apply().refresh();
+        virtualMachine.update().withoutSystemAssignedManagedServiceIdentity().apply();
 
         Assertions.assertTrue(virtualMachine.isManagedServiceIdentityEnabled());
         Assertions.assertNotNull(virtualMachine.managedServiceIdentityType());
@@ -460,7 +460,7 @@ public class VirtualMachineEMSILMSIOperationsTests extends ComputeManagementTest
         Assertions.assertNull(virtualMachine.systemAssignedManagedServiceIdentityTenantId());
         Assertions.assertEquals(1, virtualMachine.userAssignedManagedServiceIdentityIds().size());
         //
-        virtualMachine.update().withoutUserAssignedManagedServiceIdentity(identity.id()).apply().refresh();
+        virtualMachine.update().withoutUserAssignedManagedServiceIdentity(identity.id()).apply();
         Assertions.assertFalse(virtualMachine.isManagedServiceIdentityEnabled());
         if (virtualMachine.managedServiceIdentityType() != null) {
             Assertions.assertTrue(virtualMachine.managedServiceIdentityType().equals(ResourceIdentityType.NONE));

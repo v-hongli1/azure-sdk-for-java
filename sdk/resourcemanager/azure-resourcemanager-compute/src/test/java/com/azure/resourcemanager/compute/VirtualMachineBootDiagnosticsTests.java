@@ -279,7 +279,7 @@ public class VirtualMachineBootDiagnosticsTests extends ComputeManagementTest {
             .disableSharedKeyAccess();
 
         StorageAccount storageAccount = storageManager.storageAccounts()
-            .define(storageName)
+            .define(generateRandomResourceName("stg", 17))
             .withRegion(region)
             .withNewResourceGroup(rgName)
             .disableSharedKeyAccess()

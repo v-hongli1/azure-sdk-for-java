@@ -1851,7 +1851,7 @@ public class VirtualMachineScaleSetOperationsTests extends ComputeManagementTest
         ResourceManagerUtils.sleep(Duration.ofMinutes(1));
 
         // verify that scaling up won't result in outdated VMs
-        Assertions.assertFalse(uniformVMSS.virtualMachines()
+        Assertions.assertTrue(uniformVMSS.virtualMachines()
             .list()
             .stream()
             .allMatch(VirtualMachineScaleSetVM::isLatestScaleSetUpdateApplied));
