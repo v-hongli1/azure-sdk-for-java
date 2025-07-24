@@ -12,8 +12,7 @@ import java.time.Duration;
  */
 public interface ContainerServiceManagementClient {
     /**
-     * Gets Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms
-     * part of the URI for every service call.
+     * Gets The ID of the target subscription. The value must be an UUID.
      * 
      * @return the subscriptionId value.
      */
@@ -25,6 +24,13 @@ public interface ContainerServiceManagementClient {
      * @return the endpoint value.
      */
     String getEndpoint();
+
+    /**
+     * Gets Api Version.
+     * 
+     * @return the apiVersion value.
+     */
+    String getApiVersion();
 
     /**
      * Gets The HTTP pipeline to send requests through.
@@ -39,20 +45,6 @@ public interface ContainerServiceManagementClient {
      * @return the defaultPollInterval value.
      */
     Duration getDefaultPollInterval();
-
-    /**
-     * Gets the OpenShiftManagedClustersClient object to access its operations.
-     * 
-     * @return the OpenShiftManagedClustersClient object.
-     */
-    OpenShiftManagedClustersClient getOpenShiftManagedClusters();
-
-    /**
-     * Gets the ContainerServicesClient object to access its operations.
-     * 
-     * @return the ContainerServicesClient object.
-     */
-    ContainerServicesClient getContainerServices();
 
     /**
      * Gets the OperationsClient object to access its operations.
