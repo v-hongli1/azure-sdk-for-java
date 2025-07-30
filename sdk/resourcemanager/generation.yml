@@ -1,0 +1,63 @@
+trigger: none
+
+pr: none
+
+parameters: # parameters(instead of variables) is used here for template compile time expressions
+  - name: SdkReleaseType
+    displayName: SDK release type
+    type: string
+    values:
+      - beta
+      - stable
+    default: beta
+
+variables:
+  - group: Release Secrets for GitHub
+  - name: MAVEN_CACHE_FOLDER
+    value: $(Pipeline.Workspace)/.m2/repository
+  - name: MAVEN_OPTS
+    value: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+  - name: NodeVersion
+    value: '20.x'
+  - name: JavaVersion
+    value: '17'
+
+steps:
+  - bash: |
+      sudo apt-get install -y --upgrade python3-pip python3-setuptools
+      pip3 install --upgrade wheel
+      pip3 install --upgrade PyYAML requests
+    displayName: Update python
+
+  - task: NodeTool@0
+    displayName: 'Install Node.js $(NodeVersion)'
+    inputs:
+      versionSpec: '$(NodeVersion)'
+
+  - bash: |
+      npm install -g autorest
+    displayName: 'Install autorest'
+
+  - bash: |
+      npm install -g gulp
+    displayName: 'Install gulp'
+
+  - bash: |
+      git checkout "$(PREVIOUS_RELEASE_TAG)" -b "release/$(PROJECT_DIR)/$(RELEASE_VERSION)"
+    displayName: 'Create branch for a specific Git tag'
+    condition: ${{ eq(parameters.SdkReleaseType, 'beta') }}
+
+  - bash: |
+      export PATH=$JAVA_HOME_11_X64/bin:$PATH
+      java -version
+      set -x
+      gulp codegen --projects "$(PROJECT)" --autorest-java @autorest/java@latest --apispecs-args "$(APISPECS_ARGS)"
+    displayName: 'Generation from Swagger For Premium'
+
+  - template: ../../eng/common/pipelines/templates/steps/create-pull-request.yml
+    parameters:
+      PRBranchName: fluent-Premium-generation-$(Build.BuildId)
+      CommitMsg: '[Automation] Generate Fluent Premium from Swagger $(PROJECT)#$(README_TAG)'
+      PRTitle: '[Automation] Generate Fluent Premium from Swagger $(PROJECT)#$(README_TAG)'
+      PRLabels: 'Mgmt - Track 2'
+      OpenAsDraft: '$(DRAFT_PULL_REQUEST)'
