@@ -24,7 +24,8 @@ async function defaultInfo() {
             "[--autorest-java <autorest.java info>] " +
             "[--debugger] " +
             "[--parallel <number>] " +
-            "[--autorest-args <AutoRest arguments>]\n"
+            "[--autorest-args <AutoRest arguments>] " +
+            "[--apispecs-args <ApiSpecs arguments>]\n"
     );
 
     console.log("--spec-root");
@@ -55,6 +56,9 @@ async function defaultInfo() {
     console.log("\tSpecifies the maximum number of projects to generate in parallel.");
     console.log("\tDefaults to the number of logical CPUs on the system. (On this system, " + os.cpus().length + ")");
 
+    console.log("--apispecs-args");
+    console.log("\tPasses additional argument to ApiSpecs");
+
     console.log("--autorest-args");
     console.log("\tPasses additional argument to AutoRest generator");
 }
@@ -71,6 +75,7 @@ if (args["autorest-java"] !== undefined) {
 }
 var debug = args["debugger"];
 var autoRestArgs = args["autorest-args"] || "";
+var apiSpecsArgs = args["apispecs-args"] || "";
 var autoRestExe;
 
 async function generate(cb) {
@@ -136,8 +141,8 @@ function codegen(project, cb) {
     const regenManager = args["regenerate-manager"] ? " --regenerate-manager " : "";
 
     const outDir = path.resolve(mappings[project].dir);
-    cmd =
-        autoRestExe +
+
+    cmd = autoRestExe +
         " " +
         readmeFile +
         " --java " +
@@ -150,11 +155,12 @@ function codegen(project, cb) {
         ` --java.license-header=MICROSOFT_MIT_SMALL ` +
         generatorPath +
         regenManager +
-        autoRestArgs;
+        autoRestArgs +
+        apiSpecsArgs;
 
-    if (mappings[project].args !== undefined) {
-        cmd += " " + mappings[project].args;
-    }
+//    if (mappings[project].args !== undefined) {
+//        cmd += " " + mappings[project].args;
+//    }
 
     if (debug) {
         cmd += " --java.debugger";

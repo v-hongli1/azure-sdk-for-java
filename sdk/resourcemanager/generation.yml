@@ -1,0 +1,78 @@
+trigger: none
+
+pr: none
+
+parameters: # parameters(instead of variables) is used here for template compile time expressions
+  - name: Project
+    displayName: Project
+    type: string
+  - name: SdkReleaseType
+    displayName: SDK release type
+    type: string
+    values:
+      - beta
+      - stable
+    default: beta
+  - name: PreviousReleaseTag
+    displayName: Previous Premium Release Tag
+    type: string
+  - name: TargetReleaseTag
+    displayName: Readme Tag
+    type: string
+  - name: ReleaseVersion
+    displayName: Release Version
+    type: string
+  - name: ApiSpecArgsWithOutTag
+    displayName: Api Spec Args with out tag
+    type: string
+
+variables:
+  - group: Release Secrets for GitHub
+  - name: MAVEN_CACHE_FOLDER
+    value: $(Pipeline.Workspace)/.m2/repository
+  - name: MAVEN_OPTS
+    value: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+  - name: NodeVersion
+    value: '20.x'
+  - name: JavaVersion
+    value: '17'
+
+steps:
+  - bash: |
+      sudo apt-get install -y --upgrade python3-pip python3-setuptools
+      pip3 install --upgrade wheel
+      pip3 install --upgrade PyYAML requests
+    displayName: Update python
+
+  - task: NodeTool@0
+    displayName: 'Install Node.js $(NodeVersion)'
+    inputs:
+      versionSpec: '$(NodeVersion)'
+
+  - bash: |
+      npm install -g autorest
+    displayName: 'Install autorest'
+
+  - bash: |
+      npm install -g gulp
+    displayName: 'Install gulp'
+
+  - bash: |
+      git checkout "${{ PreviousReleaseTag }}" -b "release/${{ parameters.Project }}/${{ parameters.TargetReleaseTag }}"
+    displayName: 'Create branch for a specific Git tag'
+    condition: ${{ eq(parameters.SdkReleaseType, 'beta') }}
+
+  - bash: |
+      export PATH=$JAVA_HOME_11_X64/bin:$PATH
+      java -version
+      set -x
+      gulp codegen --projects "${{ parameters.Project }}" --autorest-java @autorest/java@latest --apispecs-args "--tag=" + "${{ parameters.TargetReleaseTag }}" + " " +"${{ parameters.ApiSpecArgs }}"
+    displayName: 'Generation from Swagger For Premium'
+
+  - template: ../../eng/common/pipelines/templates/steps/create-pull-request.yml
+    parameters:
+      PRBranchName: fluent-Premium-generation-$(Build.BuildId)
+      CommitMsg: '[Automation] Generate Fluent Premium from Swagger ${{ Project }}#${{ TargetReleaseTag }}'
+      PRTitle: '[Automation] Generate Fluent Premium from Swagger ${{ Project }}#${{ TargetReleaseTag }}'
+      PRLabels: 'Mgmt - Track 2'
+      OpenAsDraft: '$(DRAFT_PULL_REQUEST)'
