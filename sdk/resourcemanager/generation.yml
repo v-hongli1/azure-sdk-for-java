@@ -3,9 +3,6 @@ trigger: none
 pr: none
 
 parameters: # parameters(instead of variables) is used here for template compile time expressions
-  - name: Project
-    displayName: Project
-    type: string
   - name: SdkReleaseType
     displayName: SDK release type
     type: string
@@ -13,18 +10,6 @@ parameters: # parameters(instead of variables) is used here for template compile
       - beta
       - stable
     default: beta
-  - name: PreviousReleaseTag
-    displayName: Previous Release Tag
-    type: string
-  - name: TargetReleaseTag
-    displayName: Readme Release Tag
-    type: string
-  - name: ReleaseVersion
-    displayName: Release Version
-    type: string
-  - name: ApiSpecArgs
-    displayName: ApiSpecs Args
-    type: string
 
 variables:
   - group: Release Secrets for GitHub
@@ -58,7 +43,7 @@ steps:
     displayName: 'Install gulp'
 
   - bash: |
-      git checkout "${{ PreviousReleaseTag }}" -b "release/${{ parameters.Project }}/${{ parameters.ReleaseVersion }}"
+      git checkout "$(PREVIOUS_RELEASE_TAG)" -b "release/$(PROJECT)/$(RELEASE_VERSION)"
     displayName: 'Create branch for a specific Git tag'
     condition: ${{ eq(parameters.SdkReleaseType, 'beta') }}
 
@@ -66,7 +51,7 @@ steps:
       export PATH=$JAVA_HOME_11_X64/bin:$PATH
       java -version
       set -x
-      gulp codegen --projects "${{ parameters.Project }}" --autorest-java @autorest/java@latest --apispecs-args "${{ parameters.ApiSpecArgs }}"
+      gulp codegen --projects "$(PROJECT)" --autorest-java @autorest/java@latest --apispecs-args "$(APISPECS_ARGS)"
     displayName: 'Generation from Swagger For Premium'
 
   - template: ../../eng/common/pipelines/templates/steps/create-pull-request.yml
