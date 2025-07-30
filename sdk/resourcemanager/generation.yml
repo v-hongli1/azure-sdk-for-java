@@ -43,7 +43,7 @@ steps:
     displayName: 'Install gulp'
 
   - bash: |
-      git checkout "$(PREVIOUS_RELEASE_TAG)" -b "release/$(PROJECT)/$(RELEASE_VERSION)"
+      git checkout "$(PREVIOUS_RELEASE_TAG)" -b "release/$(PROJECT_DIR)/$(RELEASE_VERSION)"
     displayName: 'Create branch for a specific Git tag'
     condition: ${{ eq(parameters.SdkReleaseType, 'beta') }}
 
