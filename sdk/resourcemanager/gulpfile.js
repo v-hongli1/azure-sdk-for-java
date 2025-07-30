@@ -141,7 +141,6 @@ function codegen(project, cb) {
     const regenManager = args["regenerate-manager"] ? " --regenerate-manager " : "";
 
     const outDir = path.resolve(mappings[project].dir);
-
     cmd = autoRestExe +
         " " +
         readmeFile +
