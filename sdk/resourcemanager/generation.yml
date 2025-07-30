@@ -57,7 +57,7 @@ steps:
   - template: ../../eng/common/pipelines/templates/steps/create-pull-request.yml
     parameters:
       PRBranchName: fluent-Premium-generation-$(Build.BuildId)
-      CommitMsg: '[Automation] Generate Fluent Premium from Swagger ${{ Project }}#${{ TargetReleaseTag }}'
-      PRTitle: '[Automation] Generate Fluent Premium from Swagger ${{ Project }}#${{ TargetReleaseTag }}'
+      CommitMsg: '[Automation] Generate Fluent Premium from Swagger $(PROJECT)#$(README_TAG)'
+      PRTitle: '[Automation] Generate Fluent Premium from Swagger $(PROJECT)#$(README_TAG)'
       PRLabels: 'Mgmt - Track 2'
       OpenAsDraft: '$(DRAFT_PULL_REQUEST)'
