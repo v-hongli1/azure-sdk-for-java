@@ -3,28 +3,33 @@ trigger: none
 pr: none
 
 parameters: # parameters(instead of variables) is used here for template compile time expressions
-  - name: SdkReleaseType
+  - name: RELEASE_TYPE
     displayName: SDK release type
     type: string
     values:
       - beta
       - stable
     default: beta
-  - name: Project
-    displayName: Project Name
-    type: string
-  - name: PreviousReleaseTag
-    displayName: Previous Release Tag
-    type: string
-  - name: ReadmeTag
-    displayName: Readme Tag
-    type: string
-  - name: ReleaseVersion
-    displayName: Release Version
-    type: string
-  - name: ApiSpecsArgs
-    displayName: Api Specs Args
-    type: string
+#  - name: PROJECT_NAME
+#    displayName: Project Name
+#    type: string
+#    default: containerregistry
+#  - name: PREVIOUS_RELEASE_TAG
+#    displayName: Previous Release Tag
+#    type: string
+#    default: azure-resourcemanager-containerregistry_2.49.0
+#  - name: README_TAG
+#    displayName: Readme Tag
+#    type: string
+#    default: package-2025-03-preview
+#  - name: RELEASE_VERSION
+#    displayName: Release Version
+#    type: string
+#    default: 2.50.0-beta.1
+#  - name: API_SPECS_ARGS
+#    displayName: Api Specs Args
+#    type: string
+#    default: --modelerfour.lenient-model-deduplication=true --enable-sync-stack=false
 
 variables:
   - group: Release Secrets for GitHub
@@ -58,21 +63,21 @@ steps:
     displayName: 'Install gulp'
 
   - bash: |
-      git checkout ${{ parameters.PreviousReleaseTag }} -b "release/azure-resourcemanager-" + ${{ parameters.Project }} + "/" + ${{ parameters.ReleaseVersion }}
+      git checkout ${{ parameters.PREVIOUS_RELEASE_TAG }} -b "release/azure-resourcemanager-${{ parameters.PROJECT_NAME }}/${{ parameters.RELEASE_VERSION }}"
     displayName: 'Create branch for a specific git tag from upstream remote'
-    condition: ${{ eq(parameters.SdkReleaseType, 'beta') }}
+    condition: ${{ eq(parameters.RELEASE_TYPE, 'beta') }}
 
   - bash: |
       export PATH=$JAVA_HOME_11_X64/bin:$PATH
       java -version
       set -x
-      gulp codegen --projects ${{ parameters.Project }} --autorest-java @autorest/java@latest --apispecs-args ${{ parameters.ApiSpecsArgs }}
+      gulp codegen --projects ${{ parameters.PROJECT_NAME }} --autorest-java @autorest/java@latest --apispecs-args "--tag=${{ parameters.README_TAG }} ${{ parameters.API_SPECS_ARGS }}"
     displayName: 'Generation from Swagger For Premium'
 
   - template: ../../eng/common/pipelines/templates/steps/create-pull-request.yml
     parameters:
       PRBranchName: fluent-Premium-generation-$(Build.BuildId)
-      CommitMsg: '[Automation] Generate Fluent Premium from Swagger ${{ parameters.Project }}#${{ parameters.ReadmeTag }}'
-      PRTitle: '[Automation] Generate Fluent Premium from Swagger ${{ parameters.Project }}#${{ parameters.ReadmeTag }}'
+      CommitMsg: '[Automation] mgmt, local generation for ${{ parameters.PROJECT_NAME }} ${{ parameters.README_TAG }}'
+      PRTitle: '[Automation] mgmt, local generation for ${{ parameters.PROJECT_NAME }} ${{ parameters.README_TAG }}'
       PRLabels: 'Mgmt - Track 2'
       OpenAsDraft: '$(DRAFT_PULL_REQUEST)'
