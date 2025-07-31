@@ -63,7 +63,7 @@ steps:
     displayName: 'Install gulp'
 
   - bash: |
-      git checkout ${{ parameters.PREVIOUS_RELEASE_TAG }} -b "release/azure-resourcemanager-${{ parameters.PROJECT_NAME }}/${{ parameters.RELEASE_VERSION }}"
+      git checkout $(PREVIOUS_RELEASE_TAG) -b "release/azure-resourcemanager-$(PROJECT_NAME)/$(RELEASE_VERSION)"
     displayName: 'Create branch for a specific git tag from upstream remote'
     condition: ${{ eq(parameters.RELEASE_TYPE, 'beta') }}
 
@@ -71,13 +71,13 @@ steps:
       export PATH=$JAVA_HOME_11_X64/bin:$PATH
       java -version
       set -x
-      gulp codegen --projects ${{ parameters.PROJECT_NAME }} --autorest-java @autorest/java@latest --apispecs-args "--tag=${{ parameters.README_TAG }} ${{ parameters.API_SPECS_ARGS }}"
+      gulp codegen --projects $(PROJECT_NAME) --autorest-java @autorest/java@latest --apispecs-args "--tag=$(README_TAG)} $(parameters.API_SPECS_ARGS)"
     displayName: 'Generation from Swagger For Premium'
 
   - template: ../../eng/common/pipelines/templates/steps/create-pull-request.yml
     parameters:
       PRBranchName: fluent-Premium-generation-$(Build.BuildId)
-      CommitMsg: '[Automation] mgmt, local generation for ${{ parameters.PROJECT_NAME }} ${{ parameters.README_TAG }}'
-      PRTitle: '[Automation] mgmt, local generation for ${{ parameters.PROJECT_NAME }} ${{ parameters.README_TAG }}'
+      CommitMsg: '[Automation] mgmt, local generation for $(parameters.PROJECT_NAME) $(README_TAG)'
+      PRTitle: '[Automation] mgmt, local generation for $(parameters.PROJECT_NAME) $(README_TAG)'
       PRLabels: 'Mgmt - Track 2'
       OpenAsDraft: '$(DRAFT_PULL_REQUEST)'
