@@ -43,15 +43,15 @@ steps:
     displayName: 'Install gulp'
 
   - bash: |
-      git checkout "$(PREVIOUS_RELEASE_TAG)" -b "release/$(PROJECT_DIR)/$(RELEASE_VERSION)"
-    displayName: 'Create branch for a specific Git tag'
+      git checkout '$(PREVIOUS_RELEASE_TAG)' -b "release/azure-resourcemanager-" + '$(PROJECT)/$(RELEASE_VERSION)'
+    displayName: 'Create branch for a specific git tag from upstream remote'
     condition: ${{ eq(parameters.SdkReleaseType, 'beta') }}
 
   - bash: |
       export PATH=$JAVA_HOME_11_X64/bin:$PATH
       java -version
       set -x
-      gulp codegen --projects "$(PROJECT)" --autorest-java @autorest/java@latest --apispecs-args "$(APISPECS_ARGS)"
+      gulp codegen --projects '$(PROJECT)' --autorest-java @autorest/java@latest --apispecs-args '$(APISPECS_ARGS)'
     displayName: 'Generation from Swagger For Premium'
 
   - template: ../../eng/common/pipelines/templates/steps/create-pull-request.yml
