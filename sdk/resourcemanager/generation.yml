@@ -10,6 +10,21 @@ parameters: # parameters(instead of variables) is used here for template compile
       - beta
       - stable
     default: beta
+  - name: Project
+    displayName: Project Name
+    type: string
+  - name: PreviousReleaseTag
+    displayName: Previous Release Tag
+    type: string
+  - name: ReadmeTag
+    displayName: Readme Tag
+    type: string
+  - name: ReleaseVersion
+    displayName: Release Version
+    type: string
+  - name: ApiSpecsArgs
+    displayName: Api Specs Args
+    type: string
 
 variables:
   - group: Release Secrets for GitHub
@@ -43,7 +58,7 @@ steps:
     displayName: 'Install gulp'
 
   - bash: |
-      git checkout '$(PREVIOUS_RELEASE_TAG)' -b "release/azure-resourcemanager-" + '$(PROJECT)/$(RELEASE_VERSION)'
+      git checkout ${{ parameters.PreviousReleaseTag }} -b "release/azure-resourcemanager-" + ${{ parameters.Project }} + "/" + ${{ parameters.ReleaseVersion }}
     displayName: 'Create branch for a specific git tag from upstream remote'
     condition: ${{ eq(parameters.SdkReleaseType, 'beta') }}
 
@@ -51,13 +66,13 @@ steps:
       export PATH=$JAVA_HOME_11_X64/bin:$PATH
       java -version
       set -x
-      gulp codegen --projects '$(PROJECT)' --autorest-java @autorest/java@latest --apispecs-args '$(APISPECS_ARGS)'
+      gulp codegen --projects ${{ parameters.Project }} --autorest-java @autorest/java@latest --apispecs-args ${{ parameters.ApiSpecsArgs }}
     displayName: 'Generation from Swagger For Premium'
 
   - template: ../../eng/common/pipelines/templates/steps/create-pull-request.yml
     parameters:
       PRBranchName: fluent-Premium-generation-$(Build.BuildId)
-      CommitMsg: '[Automation] Generate Fluent Premium from Swagger $(PROJECT)#$(README_TAG)'
-      PRTitle: '[Automation] Generate Fluent Premium from Swagger $(PROJECT)#$(README_TAG)'
+      CommitMsg: '[Automation] Generate Fluent Premium from Swagger ${{ parameters.Project }}#${{ parameters.ReadmeTag }}'
+      PRTitle: '[Automation] Generate Fluent Premium from Swagger ${{ parameters.Project }}#${{ parameters.ReadmeTag }}'
       PRLabels: 'Mgmt - Track 2'
       OpenAsDraft: '$(DRAFT_PULL_REQUEST)'
